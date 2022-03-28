@@ -1,0 +1,11 @@
+Wed, 16 Mar 2022 11:30:17 GMT - MongoError: bad auth : Authentication failed.
+Thu, 24 Mar 2022 03:45:36 GMT - TypeError: user.createPasswordResetToken is not a function
+Thu, 24 Mar 2022 03:46:39 GMT - TypeError: user.createPasswordResetToken is not a function
+Thu, 24 Mar 2022 03:48:23 GMT - TypeError: user.createPasswordResetToken is not a function
+Thu, 24 Mar 2022 03:49:14 GMT - TypeError: user.createPasswordResetToken is not a function
+Thu, 24 Mar 2022 03:51:35 GMT - TypeError: user.createPasswordResetToken is not a function
+Fri, 25 Mar 2022 02:57:51 GMT - TypeError: user.correctPassword is not a function
+Fri, 25 Mar 2022 02:59:25 GMT - ValidationError: passwordConfirm: Please confirm your password
+Fri, 25 Mar 2022 03:00:01 GMT - ValidationError: passwordConfirm: Please confirm your password
+Fri, 25 Mar 2022 03:00:40 GMT - ValidationError: passwordConfirm: Please confirm your password
+Fri, 25 Mar 2022 03:01:07 GMT - ValidationError: passwordConfirm: Please confirm your password
