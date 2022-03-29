@@ -8,10 +8,14 @@ const router = express.Router({ mergeParams: true });
 // router.get('/getReview', reviewController.getAllReviews);
 
 
-router.route('/').get(reviewController.getAllReviews)
-  .post(authController.protect, authController.restrictTo('user'), reviewController.createReview);
+
+router.use(authController.protect);
+router.route('/').get(reviewController.getAllReviews).post(authController.protect, authController.restrictTo('user'),
+  reviewController.setTouruserId, reviewController.createReview);
 
 // router.route('/:id').get(userController.getUser).patch(userController.updateUser).delete(userController.deleteUser);
 
-
+router.route('/:id')
+  .get(reviewController.getReview)
+  .delete(authController.restrictTo('user', 'admin'), reviewController.deleteReview).patch(authController.restrictTo('user', 'admin'), reviewController.updateReview);
 module.exports = router;

@@ -1,3 +1,4 @@
+const path = require('path');
 const express = require('express');
 const morgan = require('morgan');
 const tourRouter = require('./routes/tourRoutes');
@@ -12,7 +13,8 @@ const xss = require('xss-clean');
 const hpp = require('hpp');
 const app = express();
 
-
+app.set('view engine', 'pug');
+app.set('views', path.join(__dirname, 'views'))
 
 
 //Body parser
@@ -33,6 +35,7 @@ const limiter = rateLimit({
 
 });
 
+app.use(express.static(path.join(__dirname, 'public')))
 app.use('/api', limiter);
 // ********************************
 
@@ -59,7 +62,6 @@ app.use(hpp({
 }));
 
 
-app.use(express.static(`${__dirname}/public`));
 
 
 app.use((req, res, next) => {
@@ -92,7 +94,9 @@ app.use((req, res, next) => {
 //3 Router
 
 
-
+app.get('/', (req, res) => {
+  res.status(200).render('base');
+})
 
 
 

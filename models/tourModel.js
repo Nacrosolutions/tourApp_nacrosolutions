@@ -38,7 +38,8 @@ const tourSchema = new mongoose.Schema({
     type: Number,
     default: 4.5,
     min: [1, 'A tour must have minimum rating (1)'],
-    max: [5, 'A tour must not be greater than (5)']
+    max: [5, 'A tour must not be greater than (5)'],
+    set: val => Math.round(val * 10) / 10
   },
   ratingsQuantity: {
     type: Number,
@@ -85,8 +86,7 @@ const tourSchema = new mongoose.Schema({
   },
 
   startLocation: {
-    //Geo JSON 
-    //Embedded object
+    // GeoJSON
     type: {
       type: String,
       default: 'Point',
@@ -95,7 +95,6 @@ const tourSchema = new mongoose.Schema({
     coordinates: [Number],
     address: String,
     description: String
-
   },
   locations: [
     {
@@ -121,6 +120,11 @@ const tourSchema = new mongoose.Schema({
   { toJSON: { virtuals: true } }, {
   toObject: { virtuals: true }
 });
+
+// tourSchema.index({ price: 1 })
+tourSchema.index({ price: 1, ratingsAverage: -1 })
+tourSchema.index({ slug: 1 })
+tourSchema.index({ 'startLocation': '2dsphere' })
 
 
 tourSchema.virtual('durationWeeks').get(function () {
@@ -185,11 +189,11 @@ tourSchema.post(/^find/, function (docs, next) {
 
 
 //Aggregration pipeLine 
-tourSchema.pre('aggregate', function (next) {
-  this.pipeline().unshift({ $match: { secretTour: { $ne: true } } })
+// tourSchema.pre('aggregate', function (next) {
+//   this.pipeline().unshift({ $match: { secretTour: { $ne: true } } })
 
-  next();
-})
+//   next();
+// })
 
 const Tour = mongoose.model('Tour', tourSchema);
 

@@ -17,11 +17,23 @@ router.use('/:tourId/reviews', reviewRouter);
 router.route('/top-5-cheap').get(tourController.aliasTopTours, tourController.getAllTours);
 
 router.route('/tour-stats').get(tourController.getTourStats);
-router.route('/tour-plan/:year').get(tourController.getMonthlyPlan);
+router.route('/tour-plan/:year').get(authController.protect, authController.restrictTo('admin', 'lead-guide', 'guide'), tourController.getMonthlyPlan);
+
+// /tours-within/233/center/34.1117,-118.113/unit/miles
 
 
-router.route('/').get(authController.protect, tourController.getAllTours).post(tourController.createTour);
-router.route('/:id').get(tourController.getTour).patch(tourController.updateTour)
+router.route('/tours-within/:distance/center/:lating/unit/:unit').get(tourController.getTourWithIn)
+
+
+router.route('/distance/:latlng/unit/:unit').get(tourController.getDistances)
+
+
+
+router.route('/').get(tourController.getAllTours).post(tourController.createTour, authController.protect,
+  authController.restrictTo('admin', 'lead-guide'));
+
+router.route('/:id').get(tourController.getTour).patch(tourController.updateTour, authController.protect,
+  authController.restrictTo('admin', 'lead-guide'))
   .delete(
     authController.protect,
     authController.restrictTo('admin', 'lead-guide'),
