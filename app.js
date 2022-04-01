@@ -3,12 +3,14 @@ const express = require('express');
 const morgan = require('morgan');
 const tourRouter = require('./routes/tourRoutes');
 const userRouter = require('./routes/userRoutes');
+const viewRouter = require('./routes/viewRoutes');
 const reviewRouter = require('./routes/reviewRoutes')
 const AppError = require('./utils/apiError');
 const errorController = require('./controllers/errorController');
 const rateLimit = require('express-rate-limit')
 const helmet = require('helmet');
 const mongoSanitize = require('express-mongo-sanitize');
+const cookieParser = require('cookie-parser');
 const xss = require('xss-clean');
 const hpp = require('hpp');
 const app = express();
@@ -26,7 +28,51 @@ if (process.env.NODE_ENV === 'development') app.use(morgan('dev'));
 
 
 //Security HTTTP Header 
-app.use(helmet());
+app.use(
+  helmet({
+    crossOriginEmbedderPolicy: false,
+  })
+);
+
+// Further HELMET configuration for Security Policy (CSP)
+const scriptSrcUrls = [
+  'https://api.tiles.mapbox.com/',
+  'https://api.mapbox.com/',
+  'https://*.cloudflare.com',
+];
+const styleSrcUrls = [
+  'https://api.mapbox.com/',
+  'https://api.tiles.mapbox.com/',
+  'https://fonts.googleapis.com/',
+  'https://www.myfonts.com/fonts/radomir-tinkov/gilroy/*',
+];
+const connectSrcUrls = [
+  'https://*.mapbox.com/',
+  'https://*.cloudflare.com',
+  'http://127.0.0.1:3000',
+  'http://127.0.0.1:52191',
+
+];
+
+const fontSrcUrls = [
+  'fonts.googleapis.com',
+  'fonts.gstatic.com',
+];
+
+app.use(
+  helmet.contentSecurityPolicy({
+    directives: {
+      defaultSrc: [],
+      connectSrc: ["'self'", ...connectSrcUrls],
+      scriptSrc: ["'self'", ...scriptSrcUrls],
+      styleSrc: ["'self'", "'unsafe-inline'", ...styleSrcUrls],
+      workerSrc: ["'self'", 'blob:'],
+      objectSrc: [],
+      imgSrc: ["'self'", 'blob:', 'data:'],
+      fontSrc: ["'self'", ...fontSrcUrls],
+    },
+  })
+);
 // ************* Rate Lmiter ****************
 const limiter = rateLimit({
   max: 100,
@@ -41,6 +87,7 @@ app.use('/api', limiter);
 
 //Body parser
 app.use(express.json({ limit: '10kb' }));
+app.use(cookieParser());
 
 //Data Sanitization against NoSQl Query Injection
 
@@ -74,6 +121,7 @@ app.use((req, res, next) => {
 
 app.use((req, res, next) => {
   req.requestTime = new Date().toISOString();
+  console.log(req.cookies);
   next();
 });
 
@@ -94,13 +142,9 @@ app.use((req, res, next) => {
 //3 Router
 
 
-app.get('/', (req, res) => {
-  res.status(200).render('base');
-})
 
 
-
-
+app.use('/', viewRouter)
 app.use('/api/v1/tours', tourRouter);
 app.use('/api/v1/users', userRouter);
 app.use('/api/v1/review', reviewRouter);

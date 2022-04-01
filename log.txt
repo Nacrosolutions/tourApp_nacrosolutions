@@ -9,3 +9,7 @@ Fri, 25 Mar 2022 02:59:25 GMT - ValidationError: passwordConfirm: Please confirm
 Fri, 25 Mar 2022 03:00:01 GMT - ValidationError: passwordConfirm: Please confirm your password
 Fri, 25 Mar 2022 03:00:40 GMT - ValidationError: passwordConfirm: Please confirm your password
 Fri, 25 Mar 2022 03:01:07 GMT - ValidationError: passwordConfirm: Please confirm your password
+Thu, 31 Mar 2022 16:55:54 GMT - TypeError: Cannot read property 'name' of null
+Fri, 01 Apr 2022 04:17:06 GMT - ValidationError: email: Please provide a valid Email
+Fri, 01 Apr 2022 04:17:08 GMT - ValidationError: email: Please provide a valid Email
+Fri, 01 Apr 2022 04:18:26 GMT - ValidationError: email: Please provide a valid Email

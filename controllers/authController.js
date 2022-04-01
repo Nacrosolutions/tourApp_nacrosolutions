@@ -80,6 +80,18 @@ exports.login = catchAsync(async (req, res, next) => {
 });
 
 
+
+exports.logout = (req, res) => {
+  res.cookie('jwt', 'loggedout', {
+    expires: new Date(Date.now() + 10 * 1000),
+    httpOnly: true
+  })
+
+  res.status(200).json({
+    status: 'success'
+  })
+}
+
 exports.protect = catchAsync(async (req, res, next) => {
 
   //1) Getting a token and check if its there
@@ -87,6 +99,9 @@ exports.protect = catchAsync(async (req, res, next) => {
 
   if (req.headers.authorization && req.headers.authorization.startsWith('Bearer')) {
     token = req.headers.authorization.split(' ')[1]
+  }
+  else if (req.cookies.jwt) {
+    token = req.cookies.jwt;
   }
 
 
@@ -119,13 +134,62 @@ exports.protect = catchAsync(async (req, res, next) => {
 
   //Grant access to protected Route
 
-  req.user = freshUser
+  req.user = freshUser;
+  res.locals.user = freshUser;
 
   next();
 
 
 
 });
+
+
+
+
+
+//Only For rendered Pages and there will be no error
+exports.isLoggedIn = async (req, res, next) => {
+  try {
+
+
+
+    if (req.cookies.jwt) {
+
+      //Verfies the Token 
+      const decoded = await promisify(jwt.verify)(req.cookies.jwt, process.env.JWT_SECRET)
+
+
+      // console.log(decoded)
+
+      //3) Check if user still exist or not ?
+
+      const freshUser = await User.findById(decoded.id)
+      if (!freshUser) {
+        return next();
+      }
+
+      //4) If user changed password after the jwt is issued 
+
+      //instance method 
+      // console.log(decoded.iat)
+
+
+      if (freshUser.changePasswordAfter(decoded.iat)) {
+        return next();
+      }
+      //There is logged in user
+      res.locals.user = freshUser;
+
+      return next();
+    }
+  } catch (err) {
+    return next();
+  }
+  next();
+
+
+};
+
 
 
 
