@@ -22,8 +22,8 @@ module.exports = class Email {
         host: "smtp-relay.sendinblue.com",
         port: 587,
         auth: {
-          user: 'cu.16bec1004@gmail.com',
-          pass: '8NE9AIP5St0Za2rR',
+          user: process.env.API_KEY,
+          pass: process.env.API_SECRET,
 
         }
       }))
