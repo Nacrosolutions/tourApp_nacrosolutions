@@ -7,6 +7,8 @@ const viewRouter = require('./routes/viewRoutes');
 const reviewRouter = require('./routes/reviewRoutes')
 const AppError = require('./utils/apiError');
 const errorController = require('./controllers/errorController');
+const bookingRouter = require('./routes/bookingRoutes');
+
 const rateLimit = require('express-rate-limit')
 const helmet = require('helmet');
 const mongoSanitize = require('express-mongo-sanitize');
@@ -39,18 +41,21 @@ const scriptSrcUrls = [
   'https://api.tiles.mapbox.com/',
   'https://api.mapbox.com/',
   'https://*.cloudflare.com',
+  'https://js.stripe.com/v3/',
+  'https://checkout.stripe.com'
 ];
 const styleSrcUrls = [
   'https://api.mapbox.com/',
   'https://api.tiles.mapbox.com/',
   'https://fonts.googleapis.com/',
   'https://www.myfonts.com/fonts/radomir-tinkov/gilroy/*',
-];
+  ' checkout.stripe.com'];
 const connectSrcUrls = [
   'https://*.mapbox.com/',
   'https://*.cloudflare.com',
   'http://127.0.0.1:3000',
   'http://127.0.0.1:52191',
+  '*.stripe.com'
 
 ];
 
@@ -70,6 +75,8 @@ app.use(
       objectSrc: [],
       imgSrc: ["'self'", 'blob:', 'data:'],
       fontSrc: ["'self'", ...fontSrcUrls],
+      frameSrc: ['*.stripe.com',
+        '*.stripe.network']
     },
   })
 );
@@ -121,7 +128,6 @@ app.use((req, res, next) => {
 
 app.use((req, res, next) => {
   req.requestTime = new Date().toISOString();
-  console.log(req.cookies);
   next();
 });
 
@@ -148,6 +154,7 @@ app.use('/', viewRouter)
 app.use('/api/v1/tours', tourRouter);
 app.use('/api/v1/users', userRouter);
 app.use('/api/v1/review', reviewRouter);
+app.use('/api/v1/bookings', bookingRouter)
 
 
 app.all('*', (req, res, next) => {

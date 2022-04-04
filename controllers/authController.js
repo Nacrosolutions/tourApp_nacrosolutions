@@ -4,7 +4,7 @@ const { promisify } = require('util');
 const User = require('../models/userModal');
 const AppError = require('../utils/apiError');
 const catchAsync = require('../utils/catchAsync');
-const sendMail = require('../utils/email');
+const Email = require('../utils/email');
 
 
 
@@ -53,6 +53,10 @@ exports.signUp = catchAsync(async (req, res, err, next) => {
     passwordChangedAt: req.body.passwordChangedAt,
     role: req.body.role
   });
+
+  const url = `${req.protocol}://${req.get('host')}/me`;
+  console.log(url);
+  await new Email(newUser, url).sendWelcome();
 
   createSendToken(newUser, 201, res);
 
@@ -228,12 +232,14 @@ exports.forgotPassword = catchAsync(async (req, res, next) => {
    If you don't ignore the message`
 
   try {
-    await sendMail({
-      email: user.email,
-      subject: 'Your password reset Token valid for 10 minutes',
-      message
-    });
+    // await sendMail({
+    //   email: user.email,
+    //   subject: 'Your password reset Token valid for 10 minutes',
+    //   message
+    // });await
 
+
+    await new Email(user, resetURL).sendPasswordReset();
     res.status(200).json({
       status: 'success',
       message: 'Token send to email !'
