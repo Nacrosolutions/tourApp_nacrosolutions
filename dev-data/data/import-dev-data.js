@@ -34,7 +34,7 @@ const importData = async () => {
     await Reviews.create(reviews);
 
 
-    console.log('Data succesfully loaded!!');
+    // console.log('Data succesfully loaded!!');
   }
   catch (err) {
     console.log(err)

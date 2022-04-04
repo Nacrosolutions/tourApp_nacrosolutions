@@ -8,7 +8,7 @@ const reviewRouter = require('./routes/reviewRoutes')
 const AppError = require('./utils/apiError');
 const errorController = require('./controllers/errorController');
 const bookingRouter = require('./routes/bookingRoutes');
-
+const compression = require('compression');
 const rateLimit = require('express-rate-limit')
 const helmet = require('helmet');
 const mongoSanitize = require('express-mongo-sanitize');
@@ -116,10 +116,9 @@ app.use(hpp({
 }));
 
 
-
+app.use(compression());
 
 app.use((req, res, next) => {
-  console.log('This is second middelWare');
   next();
 });
 
